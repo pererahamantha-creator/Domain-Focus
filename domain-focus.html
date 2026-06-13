@@ -1,0 +1,2315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Domain Focus</title>
+<style>
+  :root{
+    --bg-deep:#0a0a14;
+    --bg-card: rgba(30, 25, 60, 0.45);
+    --border-glass: rgba(150, 120, 255, 0.25);
+    --accent-purple:#9b6dff;
+    --accent-blue:#5d8bff;
+    --accent-glow: rgba(140, 110, 255, 0.6);
+    --text-main:#e8e6f5;
+    --text-dim:#a9a4c4;
+    --danger:#ff6b81;
+    --success:#5dffb0;
+    --gold:#ffd166;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+
+  html{ -webkit-tap-highlight-color: transparent; }
+
+  body{
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    min-height:100vh;
+    background: radial-gradient(circle at 20% 20%, #1a1640 0%, #0a0a14 50%, #050508 100%);
+    color: var(--text-main);
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  body::before, body::after{
+    content:'';
+    position:fixed;
+    border-radius:50%;
+    filter:blur(80px);
+    z-index:-1;
+    opacity:0.35;
+    animation: float 18s ease-in-out infinite alternate;
+  }
+  body::before{
+    width:400px; height:400px;
+    background: var(--accent-purple);
+    top:-100px; left:-100px;
+  }
+  body::after{
+    width:350px; height:350px;
+    background: var(--accent-blue);
+    bottom:-100px; right:-50px;
+    animation-delay: 4s;
+  }
+
+  @keyframes float{
+    0%{ transform: translate(0,0) scale(1); }
+    100%{ transform: translate(40px,60px) scale(1.15); }
+  }
+
+  .container{
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px 16px 90px;
+    position:relative;
+    z-index:1;
+  }
+
+  header.app-header{
+    text-align:center;
+    margin-bottom: 20px;
+    position:relative;
+  }
+
+  header.app-header h1{
+    font-size: 2.2rem;
+    letter-spacing: 4px;
+    font-weight: 700;
+    background: linear-gradient(90deg, var(--accent-purple), var(--accent-blue));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 30px var(--accent-glow);
+    animation: titleGlow 4s ease-in-out infinite alternate;
+  }
+
+  @keyframes titleGlow{
+    0%{ filter: drop-shadow(0 0 6px rgba(140,110,255,0.25)); }
+    100%{ filter: drop-shadow(0 0 22px rgba(140,110,255,0.55)); }
+  }
+
+  header.app-header p{
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    margin-top: 4px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .header-tools{
+    position:absolute;
+    top: 4px;
+    right: 0;
+    display:flex;
+    gap:8px;
+  }
+
+  .tool-btn{
+    width:38px; height:38px;
+    border-radius:12px;
+    background: rgba(255,255,255,0.05);
+    border:1px solid var(--border-glass);
+    color: var(--text-dim);
+    font-size:1rem;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition: all 0.2s ease;
+  }
+  .tool-btn:hover{
+    color: var(--text-main);
+    background: rgba(150,120,255,0.15);
+    transform: translateY(-2px);
+  }
+  .tool-btn.active{
+    color: var(--accent-purple);
+    border-color: var(--accent-purple);
+    box-shadow: 0 0 12px var(--accent-glow);
+  }
+
+  .glass{
+    background: var(--bg-card);
+    border: 1px solid var(--border-glass);
+    border-radius: 18px;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+
+  .glass:hover{
+    border-color: rgba(150,120,255,0.45);
+  }
+
+  .stats-grid{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+
+  .stat-card{
+    padding: 18px 14px;
+    text-align:center;
+    animation: fadeInUp 0.5s ease both;
+  }
+
+  .stat-card .label{
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .stat-card .value{
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-main);
+    transition: transform 0.3s ease;
+  }
+
+  .stat-card .value.bump{
+    animation: bump 0.4s ease;
+  }
+
+  @keyframes bump{
+    0%{ transform: scale(1); }
+    40%{ transform: scale(1.25); }
+    100%{ transform: scale(1); }
+  }
+
+  .stat-card .value.rank{
+    background: linear-gradient(90deg, var(--accent-purple), var(--accent-blue));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .stat-card .sub{
+    font-size:0.7rem;
+    color: var(--text-dim);
+    margin-top:2px;
+  }
+
+  @keyframes fadeInUp{
+    from{ opacity:0; transform: translateY(12px); }
+    to{ opacity:1; transform: translateY(0); }
+  }
+
+  .progress-section{
+    padding: 18px 20px;
+    margin-bottom: 22px;
+  }
+
+  .progress-section .progress-label{
+    display:flex;
+    justify-content:space-between;
+    font-size:0.8rem;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+  }
+
+  .progress-bar-bg{
+    width:100%;
+    height: 14px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.06);
+    overflow:hidden;
+    border: 1px solid rgba(150,120,255,0.15);
+  }
+
+  .progress-bar-fill{
+    height:100%;
+    border-radius:999px;
+    background: linear-gradient(90deg, var(--accent-purple), var(--accent-blue));
+    box-shadow: 0 0 16px var(--accent-glow), 0 0 30px var(--accent-glow);
+    transition: width 0.6s cubic-bezier(.4,1.4,.6,1);
+    position:relative;
+  }
+
+  .progress-bar-fill::after{
+    content:'';
+    position:absolute;
+    top:0; right:0; bottom:0;
+    width:20px;
+    background: rgba(255,255,255,0.5);
+    filter: blur(6px);
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-glow{
+    0%,100%{ opacity:0.3; }
+    50%{ opacity:0.9; }
+  }
+
+  .quote-box{
+    padding: 16px 20px;
+    text-align:center;
+    margin-bottom: 22px;
+    font-style: italic;
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    border-left: 3px solid var(--accent-purple);
+    border-radius: 14px;
+  }
+
+  .section-title{
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    color: var(--text-main);
+    display:flex;
+    align-items:center;
+    gap: 8px;
+  }
+
+  .section-title::before{
+    content:'';
+    width: 8px; height:8px;
+    border-radius:50%;
+    background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+    box-shadow: 0 0 10px var(--accent-glow);
+    display:inline-block;
+    flex-shrink:0;
+  }
+
+  .section-title .section-sub{
+    margin-left:auto;
+    font-size:0.7rem;
+    text-transform:none;
+    letter-spacing:0;
+    color: var(--text-dim);
+  }
+
+  .mission-input-row{
+    display:flex;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .mission-input-row input[type="text"]{
+    flex: 1 1 200px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--border-glass);
+    background: rgba(255,255,255,0.04);
+    color: var(--text-main);
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .mission-input-row input[type="text"]:focus{
+    border-color: var(--accent-purple);
+    box-shadow: 0 0 0 3px rgba(155,109,255,0.15);
+  }
+
+  .mission-input-row select{
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--border-glass);
+    background: rgba(255,255,255,0.04);
+    color: var(--text-main);
+    font-size: 0.9rem;
+    outline:none;
+    cursor:pointer;
+  }
+
+  .mission-input-row select option{
+    background: #181830;
+    color: var(--text-main);
+  }
+
+  button{
+    font-family: inherit;
+    cursor:pointer;
+    border:none;
+    border-radius: 12px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
+  }
+
+  .btn-primary{
+    padding: 12px 22px;
+    background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+    color:#fff;
+    font-weight:600;
+    font-size:0.95rem;
+    letter-spacing:1px;
+    box-shadow: 0 4px 18px rgba(120,90,255,0.35);
+  }
+
+  .btn-primary:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(120,90,255,0.55);
+  }
+
+  .btn-primary:active{
+    transform: translateY(0px) scale(0.98);
+  }
+
+  .mission-list{
+    display:flex;
+    flex-direction:column;
+    gap: 10px;
+    margin-bottom: 26px;
+  }
+
+  .mission-item{
+    display:flex;
+    align-items:center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    animation: slideIn 0.35s ease;
+  }
+
+  @keyframes slideIn{
+    from{ opacity:0; transform: translateY(-8px); }
+    to{ opacity:1; transform: translateY(0); }
+  }
+
+  .mission-item.completed{
+    opacity: 0.55;
+  }
+
+  .mission-item.completed .mission-title{
+    text-decoration: line-through;
+    color: var(--text-dim);
+  }
+
+  .mission-item.celebrate{
+    animation: celebrate 0.6s ease;
+  }
+
+  @keyframes celebrate{
+    0%{ transform: scale(1); box-shadow:none; }
+    30%{ transform: scale(1.03); box-shadow: 0 0 30px var(--accent-glow); }
+    100%{ transform: scale(1); box-shadow:none; }
+  }
+
+  .check-circle{
+    width: 26px; height:26px;
+    flex-shrink:0;
+    border-radius:50%;
+    border: 2px solid var(--accent-purple);
+    cursor:pointer;
+    position:relative;
+    transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+  }
+
+  .check-circle:active{
+    transform: scale(0.85);
+  }
+
+  .check-circle.checked{
+    background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+    box-shadow: 0 0 14px var(--accent-glow);
+  }
+
+  .check-circle.checked::after{
+    content:'✓';
+    position:absolute;
+    top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    font-size:14px;
+    color:#fff;
+    font-weight:bold;
+  }
+
+  .mission-info{
+    flex:1;
+    min-width:0;
+  }
+
+  .mission-title{
+    font-size:0.98rem;
+    word-break: break-word;
+  }
+
+  .mission-meta{
+    font-size:0.72rem;
+    color: var(--text-dim);
+    margin-top:3px;
+    display:flex;
+    gap:8px;
+    align-items:center;
+  }
+
+  .difficulty-tag{
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 0.65rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight:700;
+  }
+
+  .difficulty-tag.easy{ background: rgba(93,255,176,0.15); color: var(--success); }
+  .difficulty-tag.medium{ background: rgba(255,200,100,0.15); color: #ffc864; }
+  .difficulty-tag.hard{ background: rgba(255,107,129,0.15); color: var(--danger); }
+
+  .mission-actions{
+    display:flex;
+    gap:6px;
+    flex-shrink:0;
+  }
+
+  .icon-btn{
+    width:34px; height:34px;
+    border-radius:10px;
+    background: rgba(255,255,255,0.05);
+    color: var(--text-dim);
+    font-size:0.95rem;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border: 1px solid transparent;
+  }
+
+  .icon-btn:hover{
+    background: rgba(150,120,255,0.15);
+    color: var(--text-main);
+    border-color: var(--border-glass);
+  }
+
+  .icon-btn.delete:hover{
+    background: rgba(255,107,129,0.15);
+    color: var(--danger);
+  }
+
+  .empty-state{
+    text-align:center;
+    padding: 30px;
+    color: var(--text-dim);
+    font-size: 0.9rem;
+  }
+
+  .mini-stats{
+    display:grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 12px;
+    margin-bottom: 26px;
+  }
+
+  .mini-stat{
+    padding: 14px;
+    text-align:center;
+  }
+
+  .mini-stat .mini-value{
+    font-size: 1.3rem;
+    font-weight:700;
+    background: linear-gradient(90deg, var(--accent-purple), var(--accent-blue));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+
+  .mini-stat .mini-label{
+    font-size:0.65rem;
+    color: var(--text-dim);
+    text-transform:uppercase;
+    letter-spacing:1px;
+    margin-top:4px;
+  }
+
+  .weekly-chart-card{
+    padding: 18px 18px 14px;
+    margin-bottom: 26px;
+  }
+
+  .weekly-chart{
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap: 8px;
+    height: 140px;
+    margin-top: 10px;
+    padding-top: 10px;
+  }
+
+  .weekly-bar-col{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-end;
+    height:100%;
+    gap:6px;
+  }
+
+  .weekly-bar{
+    width: 60%;
+    max-width: 28px;
+    border-radius: 8px 8px 4px 4px;
+    background: linear-gradient(180deg, var(--accent-purple), var(--accent-blue));
+    box-shadow: 0 0 10px var(--accent-glow);
+    transition: height 0.8s cubic-bezier(.4,1.4,.6,1);
+    height: 2px;
+    min-height: 2px;
+    position:relative;
+  }
+
+  .weekly-bar-col .bar-label{
+    font-size:0.65rem;
+    color: var(--text-dim);
+    text-transform:uppercase;
+  }
+
+  .weekly-bar-col .bar-value{
+    font-size:0.65rem;
+    color: var(--text-main);
+    font-weight:700;
+  }
+
+  .weekly-bar-col.is-today .bar-label{
+    color: var(--accent-purple);
+    font-weight:700;
+  }
+
+  .heatmap-card{
+    padding: 18px;
+    margin-bottom: 26px;
+    overflow-x: auto;
+  }
+
+  .heatmap-grid{
+    display:grid;
+    grid-auto-flow:column;
+    grid-template-rows: repeat(7, 1fr);
+    gap: 4px;
+    width: max-content;
+    margin: 10px auto 8px;
+  }
+
+  .heatmap-cell{
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.04);
+    transition: transform 0.15s ease;
+    position:relative;
+  }
+
+  .heatmap-cell:hover{
+    transform: scale(1.3);
+    z-index:2;
+  }
+
+  .heatmap-cell[data-level="1"]{ background: rgba(155,109,255,0.25); }
+  .heatmap-cell[data-level="2"]{ background: rgba(155,109,255,0.45); }
+  .heatmap-cell[data-level="3"]{ background: rgba(155,109,255,0.7); box-shadow: 0 0 6px var(--accent-glow); }
+  .heatmap-cell[data-level="4"]{ background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue)); box-shadow: 0 0 10px var(--accent-glow); }
+
+  .heatmap-legend{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:4px;
+    font-size:0.65rem;
+    color: var(--text-dim);
+    margin-top: 6px;
+  }
+  .heatmap-legend .heatmap-cell{ width:11px; height:11px; cursor:default; }
+  .heatmap-legend .heatmap-cell:hover{ transform:none; }
+
+  .achievements-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 12px;
+    margin-bottom: 26px;
+  }
+
+  .badge{
+    padding: 14px 8px;
+    text-align:center;
+    border-radius:16px;
+    position:relative;
+    opacity: 0.35;
+    filter: grayscale(0.8);
+    transition: all 0.4s ease;
+  }
+
+  .badge.unlocked{
+    opacity:1;
+    filter:none;
+    border-color: rgba(255,209,102,0.4);
+    box-shadow: 0 0 18px rgba(255,209,102,0.15);
+  }
+
+  .badge.unlocked .badge-icon{
+    animation: badgePop 0.6s ease;
+  }
+
+  @keyframes badgePop{
+    0%{ transform: scale(0) rotate(-20deg); }
+    60%{ transform: scale(1.25) rotate(8deg); }
+    100%{ transform: scale(1) rotate(0deg); }
+  }
+
+  .badge-icon{
+    font-size: 1.8rem;
+    margin-bottom: 6px;
+    display:block;
+  }
+
+  .badge-name{
+    font-size:0.7rem;
+    font-weight:700;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    color: var(--text-main);
+  }
+
+  .badge-desc{
+    font-size:0.62rem;
+    color: var(--text-dim);
+    margin-top:3px;
+    line-height:1.3;
+  }
+
+  .focus-launch{
+    display:flex;
+    justify-content:center;
+    margin-bottom: 10px;
+  }
+
+  .focus-launch button{
+    padding: 18px 40px;
+    font-size: 1.05rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+    color:#fff;
+    font-weight:700;
+    box-shadow: 0 0 30px var(--accent-glow);
+    position:relative;
+    overflow:hidden;
+  }
+
+  .focus-launch button::before{
+    content:'';
+    position:absolute;
+    top:-50%; left:-50%;
+    width:200%; height:200%;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.25), transparent);
+    transform: rotate(45deg) translateX(-100%);
+    transition: transform 0.6s;
+  }
+
+  .focus-launch button:hover::before{
+    transform: rotate(45deg) translateX(100%);
+  }
+
+  .focus-launch button:hover{
+    transform: translateY(-3px);
+    box-shadow: 0 0 45px var(--accent-glow);
+  }
+
+  .data-actions{
+    display:flex;
+    gap: 10px;
+    justify-content:center;
+    flex-wrap:wrap;
+    margin-top: 20px;
+    margin-bottom: 6px;
+  }
+
+  .data-actions button{
+    padding: 10px 18px;
+    font-size:0.8rem;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border-glass);
+    color: var(--text-main);
+  }
+
+  .data-actions button:hover{
+    background: rgba(150,120,255,0.15);
+    transform: translateY(-2px);
+  }
+
+  .focus-overlay{
+    position:fixed;
+    inset:0;
+    background: radial-gradient(circle at 50% 40%, #1a1640 0%, #05050a 80%);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    z-index:1000;
+    opacity:0;
+    pointer-events:none;
+    transition: opacity 0.4s ease;
+  }
+
+  .focus-overlay.active{
+    opacity:1;
+    pointer-events:all;
+  }
+
+  .focus-overlay h2{
+    letter-spacing:6px;
+    font-size:1.4rem;
+    color: var(--text-dim);
+    text-transform:uppercase;
+    margin-bottom: 30px;
+  }
+
+  .timer-ring-wrap{
+    position:relative;
+    width: min(70vw, 280px);
+    height: min(70vw, 280px);
+    margin-bottom: 36px;
+  }
+
+  .timer-ring-wrap svg{
+    transform: rotate(-90deg);
+    width:100%; height:100%;
+  }
+
+  .timer-ring-bg{
+    fill:none;
+    stroke: rgba(255,255,255,0.06);
+    stroke-width: 10;
+  }
+
+  .timer-ring-fill{
+    fill:none;
+    stroke: url(#ringGradient);
+    stroke-width: 10;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1s linear;
+    filter: drop-shadow(0 0 12px var(--accent-glow));
+  }
+
+  .timer-display{
+    position:absolute;
+    top:50%; left:50%;
+    transform: translate(-50%,-50%);
+    font-size: 3rem;
+    font-weight:700;
+    letter-spacing: 2px;
+    text-align:center;
+  }
+
+  .timer-status{
+    font-size:0.75rem;
+    color: var(--text-dim);
+    text-transform:uppercase;
+    letter-spacing:3px;
+    margin-top:8px;
+  }
+
+  .focus-controls{
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+
+  .focus-controls button{
+    padding: 12px 26px;
+    font-size:0.9rem;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border-glass);
+    color: var(--text-main);
+    font-weight:600;
+  }
+
+  .focus-controls button:hover{
+    background: rgba(150,120,255,0.15);
+    transform: translateY(-2px);
+  }
+
+  .focus-controls button.exit-btn:hover{
+    background: rgba(255,107,129,0.15);
+    border-color: var(--danger);
+    color: var(--danger);
+  }
+
+  .focus-controls button.start-btn{
+    background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+    border:none;
+    box-shadow: 0 0 20px var(--accent-glow);
+  }
+
+  .modal-overlay{
+    position:fixed;
+    inset:0;
+    background: rgba(5,5,10,0.7);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:1100;
+    opacity:0;
+    pointer-events:none;
+    transition: opacity 0.3s ease;
+    padding: 16px;
+  }
+
+  .modal-overlay.active{
+    opacity:1;
+    pointer-events:all;
+  }
+
+  .modal-box{
+    max-width: 360px;
+    width: 100%;
+    padding: 32px 26px;
+    text-align:center;
+    transform: scale(0.85);
+    transition: transform 0.35s cubic-bezier(.34,1.56,.64,1);
+  }
+
+  .modal-overlay.active .modal-box{
+    transform: scale(1);
+  }
+
+  .modal-box .modal-icon{
+    font-size: 2.6rem;
+    margin-bottom: 12px;
+    animation: pop 0.6s ease;
+  }
+
+  @keyframes pop{
+    0%{ transform: scale(0); }
+    60%{ transform: scale(1.3); }
+    100%{ transform: scale(1); }
+  }
+
+  .modal-box h3{
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+    background: linear-gradient(90deg, var(--accent-purple), var(--accent-blue));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    letter-spacing:2px;
+    text-transform:uppercase;
+  }
+
+  .modal-box p{
+    color: var(--text-dim);
+    font-size:0.9rem;
+    margin-bottom: 18px;
+  }
+
+  .modal-box .energy-gain{
+    font-size:1.4rem;
+    font-weight:700;
+    color: var(--success);
+    margin-bottom: 16px;
+    text-shadow: 0 0 12px rgba(93,255,176,0.5);
+  }
+
+  .edit-modal-box{
+    max-width: 360px;
+    width:100%;
+    padding: 24px;
+    text-align:left;
+  }
+
+  .edit-modal-box h3{
+    margin-bottom:14px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    font-size:1rem;
+    color: var(--text-main);
+  }
+
+  .edit-modal-box label{
+    font-size:0.75rem;
+    color: var(--text-dim);
+    text-transform:uppercase;
+    letter-spacing:1px;
+    margin-bottom:6px;
+    display:block;
+    margin-top:12px;
+  }
+
+  .edit-modal-box input, .edit-modal-box select{
+    width:100%;
+    padding: 10px 12px;
+    border-radius:10px;
+    border: 1px solid var(--border-glass);
+    background: rgba(255,255,255,0.04);
+    color: var(--text-main);
+    font-size:0.9rem;
+    outline:none;
+  }
+
+  .edit-modal-box select option{
+    background:#181830;
+  }
+
+  .edit-modal-actions{
+    display:flex;
+    gap:10px;
+    margin-top: 20px;
+  }
+
+  .edit-modal-actions button{
+    flex:1;
+    padding: 10px;
+    font-size:0.85rem;
+    letter-spacing:1px;
+  }
+
+  .btn-secondary{
+    background: rgba(255,255,255,0.05);
+    border:1px solid var(--border-glass);
+    color: var(--text-main);
+  }
+
+  .btn-secondary:hover{
+    background: rgba(255,255,255,0.1);
+  }
+
+  .rankup-overlay{
+    position:fixed;
+    inset:0;
+    background: radial-gradient(circle at 50% 50%, rgba(40,30,80,0.95) 0%, rgba(4,4,10,0.97) 75%);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    z-index:1200;
+    opacity:0;
+    pointer-events:none;
+    transition: opacity 0.5s ease;
+    text-align:center;
+    overflow:hidden;
+  }
+
+  .rankup-overlay.active{
+    opacity:1;
+    pointer-events:all;
+  }
+
+  .rankup-rays{
+    position:absolute;
+    inset:-50%;
+    background: conic-gradient(from 0deg, transparent 0deg, rgba(155,109,255,0.18) 10deg, transparent 30deg, transparent 60deg, rgba(93,139,255,0.18) 70deg, transparent 90deg, transparent 150deg, rgba(155,109,255,0.15) 160deg, transparent 190deg, transparent 270deg, rgba(93,139,255,0.18) 280deg, transparent 300deg);
+    animation: spinRays 18s linear infinite;
+  }
+
+  @keyframes spinRays{
+    from{ transform: rotate(0deg); }
+    to{ transform: rotate(360deg); }
+  }
+
+  .rankup-content{
+    position:relative;
+    z-index:2;
+  }
+
+  .rankup-label{
+    font-size:0.85rem;
+    letter-spacing:6px;
+    text-transform:uppercase;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+    opacity:0;
+    animation: rankFadeIn 0.6s ease forwards;
+    animation-delay: 0.1s;
+  }
+
+  .rankup-name{
+    font-size: 3rem;
+    font-weight:800;
+    letter-spacing: 6px;
+    background: linear-gradient(90deg, var(--accent-purple), var(--gold), var(--accent-blue));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    text-shadow: 0 0 40px var(--accent-glow);
+    opacity:0;
+    transform: scale(0.6);
+    animation: rankNamePop 0.9s cubic-bezier(.34,1.56,.64,1) forwards;
+    animation-delay: 0.3s;
+  }
+
+  @keyframes rankNamePop{
+    0%{ opacity:0; transform: scale(0.4) translateY(20px); }
+    60%{ opacity:1; transform: scale(1.15) translateY(0); }
+    100%{ opacity:1; transform: scale(1) translateY(0); }
+  }
+
+  @keyframes rankFadeIn{
+    to{ opacity:1; }
+  }
+
+  .rankup-sub{
+    margin-top: 18px;
+    font-size:0.85rem;
+    color: var(--text-dim);
+    opacity:0;
+    animation: rankFadeIn 0.6s ease forwards;
+    animation-delay: 1s;
+  }
+
+  .rankup-dismiss{
+    margin-top: 30px;
+    padding: 12px 30px;
+    font-size:0.85rem;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+    color:#fff;
+    font-weight:700;
+    box-shadow: 0 0 25px var(--accent-glow);
+    opacity:0;
+    animation: rankFadeIn 0.6s ease forwards;
+    animation-delay: 1.3s;
+  }
+
+  .rankup-particle{
+    position:absolute;
+    top:50%; left:50%;
+    width:6px; height:6px;
+    border-radius:50%;
+    background: var(--accent-purple);
+    opacity:0;
+    pointer-events:none;
+  }
+
+  .toast-container{
+    position:fixed;
+    bottom: 20px;
+    left:50%;
+    transform: translateX(-50%);
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    z-index:1300;
+    width: 90%;
+    max-width: 360px;
+    pointer-events:none;
+  }
+
+  .toast{
+    padding: 12px 18px;
+    border-radius:14px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:0.85rem;
+    transform: translateY(40px);
+    opacity:0;
+    animation: toastIn 0.4s ease forwards, toastOut 0.4s ease forwards 3.2s;
+  }
+
+  @keyframes toastIn{ to{ transform: translateY(0); opacity:1; } }
+  @keyframes toastOut{ to{ transform: translateY(40px); opacity:0; } }
+
+  .toast .toast-icon{ font-size:1.4rem; }
+  .toast .toast-text strong{ color: var(--gold); }
+
+  @media (max-width: 600px){
+    .stats-grid{ grid-template-columns: repeat(3,1fr); gap:8px; }
+    .stat-card{ padding:12px 6px; }
+    .stat-card .value{ font-size:1.1rem; }
+    header.app-header h1{ font-size:1.5rem; letter-spacing:2px; }
+    header.app-header p{ font-size: 0.7rem; }
+    .header-tools{ position:static; justify-content:center; margin-top:10px; }
+    .mission-input-row{ flex-direction:column; }
+    .mission-input-row select, .mission-input-row .btn-primary{ width:100%; }
+    .mini-stats{ grid-template-columns:1fr; }
+    .timer-display{ font-size:2.2rem; }
+    .focus-launch button{ padding:16px 26px; font-size:0.9rem; letter-spacing:2px; }
+    .rankup-name{ font-size:2rem; letter-spacing:3px; }
+    .achievements-grid{ grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); }
+    .badge-icon{ font-size:1.5rem; }
+    .badge-desc{ display:none; }
+    .heatmap-cell{ width:10px; height:10px; }
+    .weekly-chart{ height:110px; }
+    .data-actions button{ flex:1 1 45%; }
+  }
+
+  @media (max-width: 360px){
+    .stats-grid{ gap:6px; }
+    .stat-card .value{ font-size:0.95rem; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header class="app-header">
+    <h1>Domain Focus</h1>
+    <p>Mission Control · Energy System</p>
+    <div class="header-tools">
+      <button class="tool-btn" id="soundToggleBtn" title="Toggle sound effects">🔊</button>
+      <button class="tool-btn" id="exportBtn" title="Export progress">⭳</button>
+      <button class="tool-btn" id="importBtn" title="Import progress">⭱</button>
+      <input type="file" id="importFileInput" accept="application/json" style="display:none;">
+    </div>
+  </header>
+
+  <div class="glass quote-box" id="quoteBox"></div>
+
+  <div class="stats-grid">
+    <div class="glass stat-card">
+      <div class="label">Rank</div>
+      <div class="value rank" id="rankDisplay">Novice</div>
+    </div>
+    <div class="glass stat-card">
+      <div class="label">Energy</div>
+      <div class="value" id="energyDisplay">0</div>
+    </div>
+    <div class="glass stat-card">
+      <div class="label">Streak</div>
+      <div class="value" id="streakDisplay">0</div>
+      <div class="sub">days</div>
+    </div>
+  </div>
+
+  <div class="glass progress-section">
+    <div class="progress-label">
+      <span id="progressLabelLeft">Progress to Apprentice</span>
+      <span id="progressLabelRight">0 / 100</span>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="rankProgressBar" style="width:0%;"></div>
+    </div>
+  </div>
+
+  <h2 class="section-title">Today's Missions</h2>
+
+  <div class="mission-input-row">
+    <input type="text" id="missionInput" placeholder="Enter a new mission..." maxlength="80">
+    <select id="difficultySelect">
+      <option value="easy">Easy (+10)</option>
+      <option value="medium" selected>Medium (+20)</option>
+      <option value="hard">Hard (+30)</option>
+    </select>
+    <button class="btn-primary" id="addMissionBtn">+ Add Mission</button>
+  </div>
+
+  <div class="mission-list" id="missionList"></div>
+
+  <h2 class="section-title">Weekly Activity <span class="section-sub" id="weeklyTotalLabel"></span></h2>
+  <div class="glass weekly-chart-card">
+    <div class="weekly-chart" id="weeklyChart"></div>
+  </div>
+
+  <h2 class="section-title">Activity Map <span class="section-sub">last 12 weeks</span></h2>
+  <div class="glass heatmap-card">
+    <div class="heatmap-grid" id="heatmapGrid"></div>
+    <div class="heatmap-legend">
+      <span>Less</span>
+      <div class="heatmap-cell" data-level="0"></div>
+      <div class="heatmap-cell" data-level="1"></div>
+      <div class="heatmap-cell" data-level="2"></div>
+      <div class="heatmap-cell" data-level="3"></div>
+      <div class="heatmap-cell" data-level="4"></div>
+      <span>More</span>
+    </div>
+  </div>
+
+  <h2 class="section-title">Achievements <span class="section-sub" id="achievementCountLabel"></span></h2>
+  <div class="achievements-grid" id="achievementsGrid"></div>
+
+  <h2 class="section-title">Statistics</h2>
+  <div class="mini-stats">
+    <div class="glass mini-stat">
+      <div class="mini-value" id="statMissionsCompleted">0</div>
+      <div class="mini-label">Missions Completed</div>
+    </div>
+    <div class="glass mini-stat">
+      <div class="mini-value" id="statFocusSessions">0</div>
+      <div class="mini-label">Focus Sessions</div>
+    </div>
+    <div class="glass mini-stat">
+      <div class="mini-value" id="statTotalEnergy">0</div>
+      <div class="mini-label">Total Energy Earned</div>
+    </div>
+  </div>
+
+  <h2 class="section-title">Domain Focus</h2>
+  <div class="focus-launch">
+    <button id="openFocusBtn">⚡ Enter Domain Focus</button>
+  </div>
+
+  <div class="data-actions">
+    <button id="exportBtn2">⭳ Export Progress (JSON)</button>
+    <button id="importBtn2">⭱ Import Progress (JSON)</button>
+  </div>
+
+</div>
+
+<div class="focus-overlay" id="focusOverlay">
+  <h2>Domain Focus</h2>
+  <div class="timer-ring-wrap">
+    <svg viewBox="0 0 200 200">
+      <defs>
+        <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#9b6dff"/>
+          <stop offset="100%" stop-color="#5d8bff"/>
+        </linearGradient>
+      </defs>
+      <circle class="timer-ring-bg" cx="100" cy="100" r="90"></circle>
+      <circle class="timer-ring-fill" id="timerRing" cx="100" cy="100" r="90"
+        stroke-dasharray="565.48" stroke-dashoffset="0"></circle>
+    </svg>
+    <div class="timer-display">
+      <div id="timerText">25:00</div>
+      <div class="timer-status" id="timerStatus">Ready</div>
+    </div>
+  </div>
+  <div class="focus-controls">
+    <button class="start-btn" id="startPauseBtn">Start</button>
+    <button id="resetBtn">Reset</button>
+    <button class="exit-btn" id="exitFocusBtn">Exit Focus</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="completeModal">
+  <div class="glass modal-box">
+    <div class="modal-icon">✨</div>
+    <h3>Mission Complete</h3>
+    <div class="energy-gain" id="energyGainText">+10 Energy</div>
+    <p id="completeQuoteText">Your domain expands.</p>
+    <button class="btn-primary" id="closeCompleteModal" style="width:100%;">Continue</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="focusCompleteModal">
+  <div class="glass modal-box">
+    <div class="modal-icon">🔮</div>
+    <h3>Focus Session Complete</h3>
+    <div class="energy-gain">+5 Energy</div>
+    <p>Your concentration has been recorded.</p>
+    <button class="btn-primary" id="closeFocusCompleteModal" style="width:100%;">Continue</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="editModal">
+  <div class="glass edit-modal-box">
+    <h3>Edit Mission</h3>
+    <label for="editTitleInput">Mission Title</label>
+    <input type="text" id="editTitleInput" maxlength="80">
+    <label for="editDifficultySelect">Difficulty</label>
+    <select id="editDifficultySelect">
+      <option value="easy">Easy (+10)</option>
+      <option value="medium">Medium (+20)</option>
+      <option value="hard">Hard (+30)</option>
+    </select>
+    <div class="edit-modal-actions">
+      <button class="btn-secondary" id="cancelEditBtn">Cancel</button>
+      <button class="btn-primary" id="saveEditBtn">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="rankup-overlay" id="rankupOverlay">
+  <div class="rankup-rays"></div>
+  <div class="rankup-content">
+    <div class="rankup-label">Domain Expansion</div>
+    <div class="rankup-name" id="rankupName">Adept</div>
+    <div class="rankup-sub" id="rankupSub">Your power has grown.</div>
+    <button class="rankup-dismiss" id="rankupDismiss">Continue</button>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+/* =========================================================
+   DOMAIN FOCUS - APPLICATION SCRIPT
+   All data persisted via localStorage.
+   ========================================================= */
+
+const ENERGY_VALUES = { easy: 10, medium: 20, hard: 30 };
+const FOCUS_ENERGY_REWARD = 5;
+const FOCUS_DURATION_SECONDS = 25 * 60;
+
+const RANKS = [
+  { name: 'Novice',     min: 0,    max: 100 },
+  { name: 'Apprentice', min: 100,  max: 300 },
+  { name: 'Adept',      min: 300,  max: 600 },
+  { name: 'Elite',      min: 600,  max: 1000 },
+  { name: 'Master',     min: 1000, max: Infinity }
+];
+
+const QUOTES = [
+  "Discipline is the bridge between goals and accomplishment.",
+  "Small daily improvements lead to staggering long-term results.",
+  "The expert in anything was once a beginner who refused to quit.",
+  "Focus on being productive instead of busy.",
+  "Your future is created by what you do today, not tomorrow.",
+  "Energy and persistence conquer all things.",
+  "Success is the sum of small efforts repeated daily.",
+  "Don't watch the clock; do what it does — keep going.",
+  "The secret of getting ahead is getting started.",
+  "Push yourself, because no one else is going to do it for you.",
+  "Great things never come from comfort zones.",
+  "Dream big. Start small. Act now.",
+  "It's going to be hard, but hard does not mean impossible.",
+  "Don't stop when you're tired. Stop when you're done.",
+  "Wake up with determination, go to bed with satisfaction.",
+  "The pain you feel today builds the strength you feel tomorrow.",
+  "Believe you can, and you're halfway there.",
+  "Your only limit is your mind.",
+  "Study while others are sleeping; work while others are loafing.",
+  "Each mission completed strengthens your domain."
+];
+
+const ACHIEVEMENTS = [
+  { id:'first_mission', icon:'🎯', name:'First Step', desc:'Complete your first mission',
+    test: s => s.totalMissionsCompleted >= 1 },
+  { id:'ten_missions', icon:'📜', name:'Dedicated', desc:'Complete 10 missions',
+    test: s => s.totalMissionsCompleted >= 10 },
+  { id:'fifty_missions', icon:'📚', name:'Scholar', desc:'Complete 50 missions',
+    test: s => s.totalMissionsCompleted >= 50 },
+  { id:'hundred_missions', icon:'🏛️', name:'Archivist', desc:'Complete 100 missions',
+    test: s => s.totalMissionsCompleted >= 100 },
+  { id:'streak_3', icon:'🔥', name:'Warming Up', desc:'Reach a 3-day streak',
+    test: s => s.streak >= 3 },
+  { id:'streak_7', icon:'🔥', name:'On Fire', desc:'Reach a 7-day streak',
+    test: s => s.streak >= 7 },
+  { id:'streak_30', icon:'☀️', name:'Unstoppable', desc:'Reach a 30-day streak',
+    test: s => s.streak >= 30 },
+  { id:'energy_100', icon:'⚡', name:'Spark', desc:'Earn 100 total energy',
+    test: s => s.totalEnergyEarned >= 100 },
+  { id:'energy_500', icon:'💠', name:'Surge', desc:'Earn 500 total energy',
+    test: s => s.totalEnergyEarned >= 500 },
+  { id:'energy_1000', icon:'🌌', name:'Overflow', desc:'Earn 1000 total energy',
+    test: s => s.totalEnergyEarned >= 1000 },
+  { id:'rank_apprentice', icon:'🔷', name:'Apprentice', desc:'Reach Apprentice rank',
+    test: s => s.energy >= 100 },
+  { id:'rank_adept', icon:'🔶', name:'Adept', desc:'Reach Adept rank',
+    test: s => s.energy >= 300 },
+  { id:'rank_elite', icon:'💎', name:'Elite', desc:'Reach Elite rank',
+    test: s => s.energy >= 600 },
+  { id:'rank_master', icon:'👑', name:'Master', desc:'Reach Master rank',
+    test: s => s.energy >= 1000 },
+  { id:'focus_1', icon:'🧘', name:'First Focus', desc:'Complete 1 focus session',
+    test: s => s.totalFocusSessions >= 1 },
+  { id:'focus_5', icon:'🌀', name:'In The Zone', desc:'Complete 5 focus sessions',
+    test: s => s.totalFocusSessions >= 5 },
+  { id:'focus_20', icon:'🌠', name:'Deep Diver', desc:'Complete 20 focus sessions',
+    test: s => s.totalFocusSessions >= 20 },
+  { id:'hard_mission', icon:'⚔️', name:'Challenger', desc:'Complete a Hard mission',
+    test: s => s.missions.some(m => m.completed && m.difficulty === 'hard') }
+];
+
+let state = {
+  missions: [],
+  energy: 0,
+  totalEnergyEarned: 0,
+  streak: 0,
+  lastCompletionDate: null,
+  totalMissionsCompleted: 0,
+  totalFocusSessions: 0,
+  unlockedAchievements: [],
+  completionHistory: {},
+  soundEnabled: true
+};
+
+function todayStr(){
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+function yesterdayStr(){
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+function dateStrFromDate(d){
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+const STORAGE_KEY = 'domainFocusData';
+
+function saveState(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function loadState(){
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if(raw){
+    try{
+      const parsed = JSON.parse(raw);
+      state = Object.assign(state, parsed);
+      if(!state.unlockedAchievements) state.unlockedAchievements = [];
+      if(!state.completionHistory) state.completionHistory = {};
+      if(typeof state.soundEnabled !== 'boolean') state.soundEnabled = true;
+    }catch(e){
+      console.warn('Could not parse saved data, starting fresh.');
+    }
+  }
+}
+
+/* ===== SOUND EFFECTS (Web Audio API) ===== */
+let audioCtx = null;
+function getAudioCtx(){
+  if(!audioCtx){
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  return audioCtx;
+}
+
+function playTones(notes){
+  if(!state.soundEnabled) return;
+  try{
+    const ctx = getAudioCtx();
+    if(ctx.state === 'suspended') ctx.resume();
+    const now = ctx.currentTime;
+
+    notes.forEach(n => {
+      const osc = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      osc.type = n.type || 'sine';
+      osc.frequency.value = n.freq;
+
+      const startTime = now + (n.time || 0);
+      const duration = n.duration || 0.15;
+      const peakGain = n.gain || 0.15;
+
+      gainNode.gain.setValueAtTime(0, startTime);
+      gainNode.gain.linearRampToValueAtTime(peakGain, startTime + 0.02);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+
+      osc.connect(gainNode);
+      gainNode.connect(ctx.destination);
+
+      osc.start(startTime);
+      osc.stop(startTime + duration + 0.05);
+    });
+  }catch(e){
+    console.warn('Audio playback failed:', e);
+  }
+}
+
+function soundMissionComplete(){
+  playTones([
+    { freq: 523.25, time: 0,    duration: 0.18, gain: 0.12 },
+    { freq: 659.25, time: 0.1,  duration: 0.22, gain: 0.12 }
+  ]);
+}
+
+function soundFocusComplete(){
+  playTones([
+    { freq: 392.00, time: 0,    duration: 0.25, gain: 0.12 },
+    { freq: 523.25, time: 0.15, duration: 0.25, gain: 0.12 },
+    { freq: 659.25, time: 0.3,  duration: 0.35, gain: 0.12 }
+  ]);
+}
+
+function soundRankUp(){
+  playTones([
+    { freq: 440.00, time: 0,    duration: 0.2,  gain: 0.13 },
+    { freq: 554.37, time: 0.12, duration: 0.2,  gain: 0.13 },
+    { freq: 659.25, time: 0.24, duration: 0.2,  gain: 0.13 },
+    { freq: 880.00, time: 0.36, duration: 0.5,  gain: 0.14 }
+  ]);
+}
+
+function soundAchievement(){
+  playTones([
+    { freq: 880.00, time: 0,    duration: 0.12, gain: 0.1, type:'triangle' },
+    { freq: 1108.73, time: 0.08, duration: 0.25, gain: 0.1, type:'triangle' }
+  ]);
+}
+
+function soundClick(){
+  playTones([
+    { freq: 300, time: 0, duration: 0.06, gain: 0.06, type:'square' }
+  ]);
+}
+
+function toggleSound(){
+  state.soundEnabled = !state.soundEnabled;
+  saveState();
+  updateSoundButton();
+  if(state.soundEnabled) soundClick();
+}
+
+function updateSoundButton(){
+  const btn = document.getElementById('soundToggleBtn');
+  if(state.soundEnabled){
+    btn.textContent = '🔊';
+    btn.classList.add('active');
+    btn.title = 'Sound effects: On';
+  } else {
+    btn.textContent = '🔇';
+    btn.classList.remove('active');
+    btn.title = 'Sound effects: Off';
+  }
+}
+
+/* ===== Rank Logic ===== */
+function getRankForEnergy(energy){
+  for(const r of RANKS){
+    if(energy >= r.min && energy < r.max) return r;
+  }
+  return RANKS[RANKS.length - 1];
+}
+
+function getRankIndexForEnergy(energy){
+  return RANKS.indexOf(getRankForEnergy(energy));
+}
+
+function updateRankDisplay(){
+  const rank = getRankForEnergy(state.energy);
+  document.getElementById('rankDisplay').textContent = rank.name;
+  document.getElementById('energyDisplay').textContent = state.energy;
+  document.getElementById('streakDisplay').textContent = state.streak;
+
+  const progLeft = document.getElementById('progressLabelLeft');
+  const progRight = document.getElementById('progressLabelRight');
+  const bar = document.getElementById('rankProgressBar');
+
+  if(rank.max === Infinity){
+    progLeft.textContent = 'Max Rank Achieved';
+    progRight.textContent = state.energy + ' Energy';
+    bar.style.width = '100%';
+  } else {
+    const nextRankIndex = RANKS.indexOf(rank) + 1;
+    const nextRankName = RANKS[nextRankIndex] ? RANKS[nextRankIndex].name : 'Master';
+    const rangeSize = rank.max - rank.min;
+    const progressInRange = state.energy - rank.min;
+    const percent = Math.min(100, (progressInRange / rangeSize) * 100);
+
+    progLeft.textContent = 'Progress to ' + nextRankName;
+    progRight.textContent = progressInRange + ' / ' + rangeSize;
+    bar.style.width = percent + '%';
+  }
+}
+
+function bumpStat(elementId){
+  const el = document.getElementById(elementId);
+  el.classList.remove('bump');
+  void el.offsetWidth;
+  el.classList.add('bump');
+}
+
+function updateStatsDisplay(){
+  document.getElementById('statMissionsCompleted').textContent = state.totalMissionsCompleted;
+  document.getElementById('statFocusSessions').textContent = state.totalFocusSessions;
+  document.getElementById('statTotalEnergy').textContent = state.totalEnergyEarned;
+}
+
+/* ===== Mission Rendering ===== */
+function renderMissions(highlightId){
+  const list = document.getElementById('missionList');
+  list.innerHTML = '';
+
+  if(state.missions.length === 0){
+    list.innerHTML = '<div class="glass empty-state">No missions yet. Add one to begin your domain.</div>';
+    return;
+  }
+
+  state.missions.forEach(mission => {
+    const item = document.createElement('div');
+    item.className = 'glass mission-item' + (mission.completed ? ' completed' : '');
+    if(mission.id === highlightId) item.classList.add('celebrate');
+    item.dataset.id = mission.id;
+
+    const energyVal = ENERGY_VALUES[mission.difficulty];
+
+    item.innerHTML = `
+      <div class="check-circle ${mission.completed ? 'checked' : ''}" data-action="toggle"></div>
+      <div class="mission-info">
+        <div class="mission-title">${escapeHtml(mission.title)}</div>
+        <div class="mission-meta">
+          <span class="difficulty-tag ${mission.difficulty}">${mission.difficulty}</span>
+          <span>+${energyVal} Energy</span>
+        </div>
+      </div>
+      <div class="mission-actions">
+        <button class="icon-btn" data-action="edit" title="Edit">✎</button>
+        <button class="icon-btn delete" data-action="delete" title="Delete">✕</button>
+      </div>
+    `;
+
+    list.appendChild(item);
+  });
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+/* ===== Mission CRUD ===== */
+function addMission(){
+  const input = document.getElementById('missionInput');
+  const difficultySelect = document.getElementById('difficultySelect');
+  const title = input.value.trim();
+
+  if(!title){
+    input.focus();
+    return;
+  }
+
+  const mission = {
+    id: Date.now().toString() + Math.random().toString(16).slice(2),
+    title: title,
+    difficulty: difficultySelect.value,
+    completed: false,
+    completedDate: null
+  };
+
+  state.missions.unshift(mission);
+  saveState();
+  renderMissions();
+  soundClick();
+
+  input.value = '';
+  input.focus();
+}
+
+function deleteMission(id){
+  state.missions = state.missions.filter(m => m.id !== id);
+  saveState();
+  renderMissions();
+}
+
+let editingMissionId = null;
+
+function openEditModal(id){
+  const mission = state.missions.find(m => m.id === id);
+  if(!mission) return;
+
+  editingMissionId = id;
+  document.getElementById('editTitleInput').value = mission.title;
+  document.getElementById('editDifficultySelect').value = mission.difficulty;
+  showModal('editModal');
+}
+
+function saveEditedMission(){
+  const mission = state.missions.find(m => m.id === editingMissionId);
+  if(!mission) return;
+
+  const newTitle = document.getElementById('editTitleInput').value.trim();
+  const newDifficulty = document.getElementById('editDifficultySelect').value;
+
+  if(newTitle){
+    mission.title = newTitle;
+  }
+  mission.difficulty = newDifficulty;
+
+  saveState();
+  renderMissions();
+  hideModal('editModal');
+  editingMissionId = null;
+}
+
+function toggleMissionComplete(id){
+  const mission = state.missions.find(m => m.id === id);
+  if(!mission) return;
+
+  const energyVal = ENERGY_VALUES[mission.difficulty];
+  const previousRankIndex = getRankIndexForEnergy(state.energy);
+
+  if(!mission.completed){
+    mission.completed = true;
+    mission.completedDate = todayStr();
+
+    state.energy += energyVal;
+    state.totalEnergyEarned += energyVal;
+    state.totalMissionsCompleted += 1;
+
+    updateStreakOnCompletion();
+    recordCompletionHistory(todayStr(), 1);
+
+    saveState();
+    renderMissions(id);
+    updateRankDisplay();
+    updateStatsDisplay();
+    renderWeeklyChart();
+    renderHeatmap();
+
+    bumpStat('energyDisplay');
+    bumpStat('streakDisplay');
+
+    soundMissionComplete();
+    showCompletionPopup(energyVal);
+
+    const newRankIndex = getRankIndexForEnergy(state.energy);
+    if(newRankIndex > previousRankIndex){
+      queueRankUp(RANKS[newRankIndex].name);
+    }
+
+    checkAchievements();
+
+  } else {
+    mission.completed = false;
+    mission.completedDate = null;
+
+    state.energy = Math.max(0, state.energy - energyVal);
+    state.totalEnergyEarned = Math.max(0, state.totalEnergyEarned - energyVal);
+    state.totalMissionsCompleted = Math.max(0, state.totalMissionsCompleted - 1);
+
+    recordCompletionHistory(todayStr(), -1);
+
+    saveState();
+    renderMissions();
+    updateRankDisplay();
+    updateStatsDisplay();
+    renderWeeklyChart();
+    renderHeatmap();
+  }
+}
+
+function recordCompletionHistory(dateKey, delta){
+  if(!state.completionHistory[dateKey]){
+    state.completionHistory[dateKey] = 0;
+  }
+  state.completionHistory[dateKey] = Math.max(0, state.completionHistory[dateKey] + delta);
+  if(state.completionHistory[dateKey] === 0){
+    delete state.completionHistory[dateKey];
+  }
+}
+
+function updateStreakOnCompletion(){
+  const today = todayStr();
+
+  if(state.lastCompletionDate === today){
+    return;
+  }
+
+  if(state.lastCompletionDate === yesterdayStr()){
+    state.streak += 1;
+  } else {
+    state.streak = 1;
+  }
+
+  state.lastCompletionDate = today;
+}
+
+function showCompletionPopup(energyVal){
+  document.getElementById('energyGainText').textContent = '+' + energyVal + ' Energy';
+  const randomQuote = QUOTES[Math.floor(Math.random() * QUOTES.length)];
+  document.getElementById('completeQuoteText').textContent = randomQuote;
+  showModal('completeModal');
+}
+
+function showModal(id){
+  document.getElementById(id).classList.add('active');
+}
+function hideModal(id){
+  document.getElementById(id).classList.remove('active');
+}
+
+/* ===== RANK-UP ANIMATED SCREEN ===== */
+let pendingRankUp = null;
+
+function queueRankUp(rankName){
+  pendingRankUp = rankName;
+  const completeModalEl = document.getElementById('completeModal');
+  if(!completeModalEl.classList.contains('active')){
+    showRankUp(rankName);
+  }
+}
+
+function showRankUp(rankName){
+  pendingRankUp = null;
+  const overlay = document.getElementById('rankupOverlay');
+  document.getElementById('rankupName').textContent = rankName;
+
+  const subTexts = {
+    Apprentice: 'Your domain begins to take shape.',
+    Adept: 'Your control over your domain deepens.',
+    Elite: 'Few can match your discipline now.',
+    Master: 'Your domain has reached its full expanse.'
+  };
+  document.getElementById('rankupSub').textContent = subTexts[rankName] || 'Your power has grown.';
+
+  overlay.classList.remove('active');
+  void overlay.offsetWidth;
+  overlay.classList.add('active');
+
+  spawnRankUpParticles();
+  soundRankUp();
+}
+
+function hideRankUp(){
+  document.getElementById('rankupOverlay').classList.remove('active');
+}
+
+function spawnRankUpParticles(){
+  const overlay = document.getElementById('rankupOverlay');
+  overlay.querySelectorAll('.rankup-particle, style.rankup-particle-style').forEach(p => p.remove());
+
+  const colors = ['#9b6dff', '#5d8bff', '#ffd166'];
+  const count = 24;
+
+  for(let i = 0; i < count; i++){
+    const particle = document.createElement('div');
+    particle.className = 'rankup-particle';
+    const angle = (Math.PI * 2 * i) / count;
+    const distance = 100 + Math.random() * 140;
+    const dx = Math.cos(angle) * distance;
+    const dy = Math.sin(angle) * distance;
+    particle.style.background = colors[i % colors.length];
+    particle.style.animation = `rankParticle${i} 1.4s ease-out forwards`;
+
+    const styleTag = document.createElement('style');
+    styleTag.className = 'rankup-particle-style';
+    styleTag.textContent = `
+      @keyframes rankParticle${i} {
+        0% { opacity:1; transform: translate(-50%,-50%) translate(0,0) scale(1); }
+        100% { opacity:0; transform: translate(-50%,-50%) translate(${dx}px, ${dy}px) scale(0.3); }
+      }
+    `;
+    overlay.appendChild(styleTag);
+    overlay.appendChild(particle);
+  }
+}
+
+/* ===== ACHIEVEMENTS ===== */
+function checkAchievements(){
+  let newlyUnlocked = [];
+
+  ACHIEVEMENTS.forEach(ach => {
+    const alreadyUnlocked = state.unlockedAchievements.includes(ach.id);
+    if(!alreadyUnlocked && ach.test(state)){
+      state.unlockedAchievements.push(ach.id);
+      newlyUnlocked.push(ach);
+    }
+  });
+
+  if(newlyUnlocked.length > 0){
+    saveState();
+    renderAchievements();
+    newlyUnlocked.forEach((ach, idx) => {
+      setTimeout(() => showAchievementToast(ach), idx * 400);
+    });
+  }
+}
+
+function renderAchievements(){
+  const grid = document.getElementById('achievementsGrid');
+  grid.innerHTML = '';
+
+  ACHIEVEMENTS.forEach(ach => {
+    const unlocked = state.unlockedAchievements.includes(ach.id);
+    const badge = document.createElement('div');
+    badge.className = 'glass badge' + (unlocked ? ' unlocked' : '');
+    badge.innerHTML = `
+      <span class="badge-icon">${ach.icon}</span>
+      <div class="badge-name">${ach.name}</div>
+      <div class="badge-desc">${ach.desc}</div>
+    `;
+    grid.appendChild(badge);
+  });
+
+  const count = state.unlockedAchievements.length;
+  document.getElementById('achievementCountLabel').textContent = count + ' / ' + ACHIEVEMENTS.length + ' unlocked';
+}
+
+function showAchievementToast(ach){
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'glass toast';
+  toast.innerHTML = `
+    <span class="toast-icon">${ach.icon}</span>
+    <span class="toast-text"><strong>Achievement Unlocked:</strong> ${ach.name}</span>
+  `;
+  container.appendChild(toast);
+  soundAchievement();
+
+  setTimeout(() => {
+    toast.remove();
+  }, 3700);
+}
+
+/* ===== WEEKLY STATISTICS ===== */
+function renderWeeklyChart(){
+  const chart = document.getElementById('weeklyChart');
+  chart.innerHTML = '';
+
+  const dayLabels = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const days = [];
+  const today = new Date();
+
+  for(let i = 6; i >= 0; i--){
+    const d = new Date(today);
+    d.setDate(today.getDate() - i);
+    days.push(d);
+  }
+
+  let weekTotal = 0;
+  let maxCount = 1;
+
+  const counts = days.map(d => {
+    const key = dateStrFromDate(d);
+    const c = state.completionHistory[key] || 0;
+    weekTotal += c;
+    if(c > maxCount) maxCount = c;
+    return c;
+  });
+
+  document.getElementById('weeklyTotalLabel').textContent = weekTotal + ' completed this week';
+
+  days.forEach((d, idx) => {
+    const isToday = dateStrFromDate(d) === todayStr();
+    const count = counts[idx];
+    const heightPercent = (count / maxCount) * 100;
+
+    const col = document.createElement('div');
+    col.className = 'weekly-bar-col' + (isToday ? ' is-today' : '');
+
+    col.innerHTML = `
+      <div class="bar-value">${count > 0 ? count : ''}</div>
+      <div class="weekly-bar" style="height:${count > 0 ? Math.max(heightPercent, 6) : 2}%;"></div>
+      <div class="bar-label">${dayLabels[d.getDay()]}</div>
+    `;
+
+    chart.appendChild(col);
+  });
+}
+
+/* ===== CALENDAR HEATMAP ===== */
+function renderHeatmap(){
+  const grid = document.getElementById('heatmapGrid');
+  grid.innerHTML = '';
+
+  const WEEKS = 12;
+  const today = new Date();
+
+  const endDate = new Date(today);
+  const daysUntilSaturday = 6 - endDate.getDay();
+  endDate.setDate(endDate.getDate() + daysUntilSaturday);
+
+  const totalDays = WEEKS * 7;
+  const startDate = new Date(endDate);
+  startDate.setDate(endDate.getDate() - (totalDays - 1));
+
+  let maxCount = 1;
+  Object.values(state.completionHistory).forEach(c => {
+    if(c > maxCount) maxCount = c;
+  });
+
+  for(let i = 0; i < totalDays; i++){
+    const d = new Date(startDate);
+    d.setDate(startDate.getDate() + i);
+    const key = dateStrFromDate(d);
+    const count = state.completionHistory[key] || 0;
+    const isFuture = d > today;
+
+    let level = 0;
+    if(!isFuture && count > 0){
+      const ratio = count / maxCount;
+      if(ratio >= 1) level = 4;
+      else if(ratio >= 0.66) level = 3;
+      else if(ratio >= 0.33) level = 2;
+      else level = 1;
+    }
+
+    const cell = document.createElement('div');
+    cell.className = 'heatmap-cell';
+    cell.dataset.level = isFuture ? '' : String(level);
+    if(isFuture){
+      cell.style.opacity = '0.15';
+    }
+    cell.title = key + ': ' + count + ' mission' + (count === 1 ? '' : 's') + ' completed';
+
+    grid.appendChild(cell);
+  }
+}
+
+/* ===== Daily Quote ===== */
+function setDailyQuote(){
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  const diff = now - start;
+  const dayOfYear = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const quote = QUOTES[dayOfYear % QUOTES.length];
+  document.getElementById('quoteBox').textContent = '"' + quote + '"';
+}
+
+/* ===== FOCUS TIMER LOGIC ===== */
+let focusTimer = {
+  remaining: FOCUS_DURATION_SECONDS,
+  running: false,
+  intervalId: null
+};
+
+const RING_CIRCUMFERENCE = 2 * Math.PI * 90;
+
+function updateTimerDisplay(){
+  const minutes = Math.floor(focusTimer.remaining / 60);
+  const seconds = focusTimer.remaining % 60;
+  document.getElementById('timerText').textContent =
+    String(minutes).padStart(2,'0') + ':' + String(seconds).padStart(2,'0');
+
+  const ring = document.getElementById('timerRing');
+  ring.setAttribute('stroke-dasharray', RING_CIRCUMFERENCE.toFixed(2));
+  const progressFraction = focusTimer.remaining / FOCUS_DURATION_SECONDS;
+  const offset = RING_CIRCUMFERENCE * (1 - progressFraction);
+  ring.setAttribute('stroke-dashoffset', offset.toFixed(2));
+}
+
+function startFocusTimer(){
+  if(focusTimer.running) return;
+  focusTimer.running = true;
+  document.getElementById('startPauseBtn').textContent = 'Pause';
+  document.getElementById('timerStatus').textContent = 'In Progress';
+
+  focusTimer.intervalId = setInterval(() => {
+    focusTimer.remaining -= 1;
+    updateTimerDisplay();
+
+    if(focusTimer.remaining <= 0){
+      clearInterval(focusTimer.intervalId);
+      focusTimer.running = false;
+      focusTimer.remaining = 0;
+      updateTimerDisplay();
+      onFocusSessionComplete();
+    }
+  }, 1000);
+}
+
+function pauseFocusTimer(){
+  if(!focusTimer.running) return;
+  clearInterval(focusTimer.intervalId);
+  focusTimer.running = false;
+  document.getElementById('startPauseBtn').textContent = 'Start';
+  document.getElementById('timerStatus').textContent = 'Paused';
+}
+
+function toggleStartPause(){
+  if(focusTimer.running){
+    pauseFocusTimer();
+  } else {
+    if(focusTimer.remaining <= 0){
+      focusTimer.remaining = FOCUS_DURATION_SECONDS;
+    }
+    startFocusTimer();
+  }
+  soundClick();
+}
+
+function resetFocusTimer(){
+  clearInterval(focusTimer.intervalId);
+  focusTimer.running = false;
+  focusTimer.remaining = FOCUS_DURATION_SECONDS;
+  document.getElementById('startPauseBtn').textContent = 'Start';
+  document.getElementById('timerStatus').textContent = 'Ready';
+  updateTimerDisplay();
+}
+
+function onFocusSessionComplete(){
+  document.getElementById('timerStatus').textContent = 'Complete';
+
+  const previousRankIndex = getRankIndexForEnergy(state.energy);
+
+  state.energy += FOCUS_ENERGY_REWARD;
+  state.totalEnergyEarned += FOCUS_ENERGY_REWARD;
+  state.totalFocusSessions += 1;
+  saveState();
+
+  updateRankDisplay();
+  updateStatsDisplay();
+  bumpStat('energyDisplay');
+
+  soundFocusComplete();
+  showModal('focusCompleteModal');
+
+  const newRankIndex = getRankIndexForEnergy(state.energy);
+  if(newRankIndex > previousRankIndex){
+    queueRankUp(RANKS[newRankIndex].name);
+  }
+
+  checkAchievements();
+}
+
+function openFocusMode(){
+  resetFocusTimer();
+  document.getElementById('focusOverlay').classList.add('active');
+  soundClick();
+}
+
+function closeFocusMode(){
+  pauseFocusTimer();
+  document.getElementById('focusOverlay').classList.remove('active');
+}
+
+/* ===== EXPORT / IMPORT PROGRESS (JSON) ===== */
+function exportProgress(){
+  const dataStr = JSON.stringify(state, null, 2);
+  const blob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  const datePart = todayStr();
+  a.download = `domain-focus-progress-${datePart}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+
+  URL.revokeObjectURL(url);
+  soundClick();
+}
+
+function triggerImport(){
+  document.getElementById('importFileInput').click();
+}
+
+function handleImportFile(e){
+  const file = e.target.files[0];
+  if(!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(event){
+    try{
+      const imported = JSON.parse(event.target.result);
+
+      if(typeof imported !== 'object' || imported === null || !Array.isArray(imported.missions)){
+        alert('This file does not appear to be a valid Domain Focus progress file.');
+        return;
+      }
+
+      const confirmImport = confirm('Importing will overwrite your current progress. Continue?');
+      if(!confirmImport) return;
+
+      state = Object.assign({
+        missions: [],
+        energy: 0,
+        totalEnergyEarned: 0,
+        streak: 0,
+        lastCompletionDate: null,
+        totalMissionsCompleted: 0,
+        totalFocusSessions: 0,
+        unlockedAchievements: [],
+        completionHistory: {},
+        soundEnabled: true
+      }, imported);
+
+      saveState();
+      refreshAllUI();
+      soundClick();
+      alert('Progress imported successfully.');
+
+    }catch(err){
+      alert('Failed to read file. Please make sure it is a valid JSON export from Domain Focus.');
+      console.error(err);
+    }
+
+    e.target.value = '';
+  };
+
+  reader.readAsText(file);
+}
+
+/* ===== EVENT BINDINGS ===== */
+function bindEvents(){
+  document.getElementById('addMissionBtn').addEventListener('click', addMission);
+  document.getElementById('missionInput').addEventListener('keydown', (e) => {
+    if(e.key === 'Enter') addMission();
+  });
+
+  document.getElementById('missionList').addEventListener('click', (e) => {
+    const actionEl = e.target.closest('[data-action]');
+    if(!actionEl) return;
+
+    const missionItem = e.target.closest('.mission-item');
+    const id = missionItem.dataset.id;
+    const action = actionEl.dataset.action;
+
+    if(action === 'toggle'){
+      toggleMissionComplete(id);
+    } else if(action === 'edit'){
+      openEditModal(id);
+      soundClick();
+    } else if(action === 'delete'){
+      deleteMission(id);
+      soundClick();
+    }
+  });
+
+  document.getElementById('cancelEditBtn').addEventListener('click', () => {
+    hideModal('editModal');
+    editingMissionId = null;
+  });
+  document.getElementById('saveEditBtn').addEventListener('click', () => {
+    saveEditedMission();
+    soundClick();
+  });
+
+  document.getElementById('closeCompleteModal').addEventListener('click', () => {
+    hideModal('completeModal');
+    soundClick();
+    if(pendingRankUp){
+      setTimeout(() => showRankUp(pendingRankUp), 250);
+    }
+  });
+
+  document.getElementById('closeFocusCompleteModal').addEventListener('click', () => {
+    hideModal('focusCompleteModal');
+    soundClick();
+    if(pendingRankUp){
+      setTimeout(() => showRankUp(pendingRankUp), 250);
+    }
+  });
+
+  document.getElementById('rankupDismiss').addEventListener('click', () => {
+    hideRankUp();
+    soundClick();
+  });
+
+  document.getElementById('openFocusBtn').addEventListener('click', openFocusMode);
+  document.getElementById('exitFocusBtn').addEventListener('click', () => {
+    closeFocusMode();
+    soundClick();
+  });
+  document.getElementById('startPauseBtn').addEventListener('click', toggleStartPause);
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    resetFocusTimer();
+    soundClick();
+  });
+
+  document.getElementById('soundToggleBtn').addEventListener('click', toggleSound);
+
+  document.getElementById('exportBtn').addEventListener('click', exportProgress);
+  document.getElementById('exportBtn2').addEventListener('click', exportProgress);
+  document.getElementById('importBtn').addEventListener('click', triggerImport);
+  document.getElementById('importBtn2').addEventListener('click', triggerImport);
+  document.getElementById('importFileInput').addEventListener('change', handleImportFile);
+}
+
+/* ===== REFRESH ALL UI (used after import) ===== */
+function refreshAllUI(){
+  setDailyQuote();
+  renderMissions();
+  updateRankDisplay();
+  updateStatsDisplay();
+  renderWeeklyChart();
+  renderHeatmap();
+  renderAchievements();
+  updateSoundButton();
+  resetFocusTimer();
+}
+
+/* ===== INITIALIZATION ===== */
+function init(){
+  loadState();
+  refreshAllUI();
+  bindEvents();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+
+</body>
+</html>
