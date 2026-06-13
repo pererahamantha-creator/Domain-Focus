@@ -6,15 +6,15 @@ Domain Focus helps students stay organized by turning daily study tasks into mis
 
 ## Features
 
-- ? Daily Mission Tracker
-- ? Energy Point System
-- ?? Rank Progression
-- ?? Daily Streak Tracking
-- ? Domain Focus Timer (Pomodoro)
-- ?? Study Statistics
-- ?? Local Storage Persistence
-- ?? Responsive Mobile & Desktop Design
-- ?? Modern Dark Theme UI
+- ✅ Daily Mission Tracker
+- ⚡ Energy Point System
+- 🏆 Rank Progression
+- 🔥 Daily Streak Tracking
+- ⏱ Domain Focus Timer (Pomodoro)
+- 📊 Study Statistics
+- 💾 Local Storage Persistence
+- 📱 Responsive Mobile & Desktop Design
+- 🌙 Modern Dark Theme UI
 
 ## How It Works
 
@@ -56,10 +56,10 @@ in any modern browser.
 
 ```text
 /
-+-- index.html
-+-- README.md
-+-- LICENSE
-+-- .gitignore
+├── index.html
+├── README.md
+├── LICENSE
+└── .gitignore
 ```
 
 ## Future Ideas
@@ -73,4 +73,4 @@ in any modern browser.
 
 ## License
 
-Released under the MIT License."# Domain-Focus" 
+Released under the MIT License.
